@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:#05000a;overflow-x:hidden;font-family:'Jost',sans-serif;cursor:none}
+
+/* Custom cursor */
+.cursor{position:fixed;width:18px;height:18px;border:1.5px solid rgba(255,140,170,0.8);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .15s ease,width .2s,height .2s,background .2s}
+.cursor-dot{position:fixed;width:5px;height:5px;background:rgba(255,140,170,1);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+.cursor.expand{width:36px;height:36px;background:rgba(255,140,170,0.1)}
+
+/* Stars */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--dur) ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.05;transform:scale(1)}to{opacity:.9;transform:scale(1.6)}}
+
+/* Shooting stars */
+.shoot{position:fixed;width:100px;height:1px;background:linear-gradient(90deg,rgba(255,200,220,0.9),transparent);pointer-events:none;z-index:1;animation:shoot linear forwards}
+@keyframes shoot{from{opacity:1;transform:translate(0,0) rotate(-35deg)}to{opacity:0;transform:translate(300px,180px) rotate(-35deg)}}
+
+/* Petals */
+.petal{position:fixed;pointer-events:none;z-index:1;animation:fall linear infinite}
+@keyframes fall{0%{transform:translateY(-60px) rotate(0deg) scale(1);opacity:0}10%{opacity:.9}90%{opacity:.5}100%{transform:translateY(110vh) rotate(900deg) scale(.5);opacity:0}}
+
+/* Orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:orbDrift ease-in-out infinite alternate}
+@keyframes orbDrift{from{transform:translate(0,0) scale(1)}to{transform:translate(25px,15px) scale(1.1)}}
+
+/* PAGE */
+.page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;position:relative;z-index:5}
+
+/* ENVELOPE intro */
+.envelope-wrap{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:#05000a;transition:opacity .8s ease}
+.envelope-wrap.hide{opacity:0;pointer-events:none}
+.envelope{width:220px;text-align:center;cursor:pointer}
+.env-body{width:220px;height:140px;background:linear-gradient(135deg,rgba(120,30,60,.9),rgba(80,10,40,.95));border:1px solid rgba(255,130,160,.3);border-radius:4px 4px 12px 12px;position:relative;display:flex;align-items:center;justify-content:center;transition:transform .3s}
+.env-body:hover{transform:scale(1.04)}
+.env-top{position:absolute;top:0;left:0;width:100%;height:0;border-left:110px solid transparent;border-right:110px solid transparent;border-top:70px solid rgba(150,40,70,.95);border-radius:4px 4px 0 0;transform-origin:top;transition:transform .5s ease}
+.envelope-wrap.opening .env-top{transform:rotateX(-160deg)}
+.env-seal{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,rgba(255,120,150,.3),rgba(200,60,100,.4));border:1px solid rgba(255,140,170,.4);display:flex;align-items:center;justify-content:center;font-size:1.4rem;animation:sealPulse 1.8s ease-in-out infinite}
+@keyframes sealPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,120,150,.4)}50%{box-shadow:0 0 0 10px rgba(255,120,150,0)}}
+.env-hint{margin-top:1.2rem;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,150,170,.5)}
+
+/* CARD */
+.card{max-width:540px;width:100%;position:relative;animation:cardIn 1.2s .2s ease both;opacity:0}
+@keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.card-inner{background:linear-gradient(160deg,rgba(255,230,235,.05),rgba(180,40,80,.04) 50%,rgba(255,210,220,.05));border:1px solid rgba(255,140,165,.2);border-radius:28px;padding:3rem 2.5rem;text-align:center;backdrop-filter:blur(12px);position:relative;overflow:hidden}
+.card-inner::before{content:'';position:absolute;top:0;left:10%;width:80%;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,140,165,.6),transparent)}
+.card-inner::after{content:'';position:absolute;bottom:0;left:20%;width:60%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,140,165,.3),transparent)}
+
+/* Candles row */
+.candles{display:flex;justify-content:center;gap:.6rem;margin-bottom:1.8rem;height:52px;align-items:flex-end}
+.candle{display:flex;flex-direction:column;align-items:center;gap:0}
+.flame{width:10px;height:16px;background:radial-gradient(ellipse at 50% 80%,#fff7d6,#ffb347 40%,#ff6b35 70%,transparent);border-radius:50% 50% 30% 30%;animation:flicker var(--fd) ease-in-out infinite alternate;transform-origin:bottom}
+@keyframes flicker{0%{transform:scaleX(1) scaleY(1) rotate(-2deg);opacity:.9}33%{transform:scaleX(.8) scaleY(1.15) rotate(2deg);opacity:1}66%{transform:scaleX(1.1) scaleY(.9) rotate(-1deg);opacity:.85}100%{transform:scaleX(.9) scaleY(1.1) rotate(3deg);opacity:1}}
+.wick{width:1.5px;height:5px;background:#ccc}
+.candle-body{width:12px;height:28px;border-radius:2px 2px 3px 3px}
+
+.badge{display:inline-block;font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,155,175,.65);margin-bottom:.9rem}
+
+.name{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,9vw,3.5rem);font-weight:600;color:#fff;line-height:1.1;margin-bottom:.4rem;text-shadow:0 0 60px rgba(255,100,140,.35)}
+.name-italic{font-style:italic;font-weight:400;font-size:clamp(1.1rem,4vw,1.5rem);color:rgba(255,185,200,.75);display:block;margin-bottom:1.8rem}
+
+/* Progress / age reveal */
+.age-row{display:flex;align-items:center;justify-content:center;gap:.8rem;margin-bottom:1.8rem}
+.age-track{flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;max-width:160px}
+.age-fill{height:100%;background:linear-gradient(90deg,rgba(255,100,140,.4),rgba(255,160,185,.8));border-radius:2px;width:0;transition:width 2s 1.5s ease}
+.age-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.9rem;color:rgba(255,180,195,.6)}
+
+.divider{display:flex;align-items:center;gap:.8rem;margin:1.4rem 0}
+.dl{flex:1;height:.5px;background:linear-gradient(90deg,transparent,rgba(255,140,165,.25),transparent)}
+.dd{width:4px;height:4px;border-radius:50%;background:rgba(255,140,165,.4)}
+
+.msg{font-family:'Jost',sans-serif;font-size:.95rem;line-height:2;color:rgba(255,228,232,.78);font-weight:300;margin-bottom:1.6rem}
+.msg em{color:rgba(255,205,215,1);font-style:normal;font-weight:400}
+
+/* Quote */
+.quote{border-left:2px solid rgba(255,130,155,.3);margin:0 0 1.8rem;padding:.8rem 1.2rem;text-align:left}
+.quote p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.08rem;color:rgba(255,215,220,.85);line-height:1.75}
+
+/* Wishes grid */
+.wishes{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:2rem}
+.wish-chip{background:rgba(255,100,140,.07);border:1px solid rgba(255,120,150,.18);border-radius:12px;padding:.75rem .9rem;text-align:left}
+.wish-chip .wicon{font-size:1.1rem;display:block;margin-bottom:.3rem}
+.wish-chip .wtext{font-size:.78rem;color:rgba(255,210,220,.72);line-height:1.5;font-weight:300}
+
+/* Signature */
+.sig{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:rgba(255,160,180,.5);letter-spacing:.05em;margin-bottom:1.2rem}
+
+/* Music toggle */
+.music-btn{background:rgba(255,110,140,.1);border:1px solid rgba(255,120,150,.25);border-radius:50px;padding:.5rem 1.2rem;color:rgba(255,180,195,.7);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:.5rem}
+.music-btn:hover{background:rgba(255,110,140,.18);color:rgba(255,210,220,1)}
+.music-note{animation:noteFloat 1.5s ease-in-out infinite}
+@keyframes noteFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+/* Confetti burst */
+.burst{position:fixed;pointer-events:none;z-index:300;font-size:1.1rem;animation:burstA .9s ease forwards}
+@keyframes burstA{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.3) rotate(var(--tr))}}
+
+/* Heart trail */
+.heart-trail{position:fixed;pointer-events:none;z-index:200;font-size:.9rem;animation:heartFade .7s ease forwards}
+@keyframes heartFade{0%{opacity:.9;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-100px) scale(.3)}}
+
+@media(max-width:480px){.card-inner{padding:2rem 1.3rem}.wishes{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- Envelope Intro -->
+<div class="envelope-wrap" id="envWrap">
+  <div class="envelope" id="env">
+    <div class="env-body" onclick="openEnvelope()">
+      <div class="env-top" id="envTop"></div>
+      <div class="env-seal">🌸</div>
+    </div>
+    <p class="env-hint">tap to open your surprise</p>
+  </div>
+</div>
+
+<div class="orb" style="width:350px;height:350px;background:rgba(160,30,70,.1);top:-80px;right:-80px;animation-duration:9s"></div>
+<div class="orb" style="width:280px;height:280px;background:rgba(90,10,50,.13);bottom:-60px;left:-50px;animation-duration:12s;animation-direction:alternate-reverse"></div>
+<div class="stars" id="stars"></div>
+<div id="petals"></div>
+
+<div class="page" id="mainPage" style="opacity:0;transition:opacity 1s ease">
+  <div class="card">
+    <div class="card-inner">
+
+      <!-- Candles -->
+      <div class="candles" id="candles"></div>
+
+      <div class="badge">✦ A letter from the heart ✦</div>
+      <div class="name">
+        Happy Birthday
+        <span class="name-italic">to my dearest friend</span>
+      </div>
+
+      <div class="age-row">
+        <div class="age-track"><div class="age-fill" id="ageFill"></div></div>
+        <span class="age-text">another beautiful year 🌹</span>
+        <div class="age-track"><div class="age-fill" id="ageFill2"></div></div>
+      </div>
+
+      <div class="divider"><div class="dl"></div><div class="dd"></div><div class="dl"></div></div>
+
+      <p class="msg">
+        You know that feeling when you find someone who <em>just gets you</em> — no explanations, no filters, just pure understanding? That's you. That's what you've always been to me.
+        <br><br>
+        Every memory with you feels like a <em>warm golden light</em> I keep coming back to. Today the whole universe pauses just for you.
+      </p>
+
+      <div class="quote">
+        <p>"The most beautiful things in life aren't things — they're people like you, moments like these, and the kind of love that feels like home."</p>
+      </div>
+
+      <div class="wishes">
+        <div class="wish-chip"><span class="wicon">🌟</span><span class="wtext">May every dream you've been quietly holding finally find its wings</span></div>
+        <div class="wish-chip"><span class="wicon">💕</span><span class="wtext">May love find you in every corner of this new year</span></div>
+        <div class="wish-chip"><span class="wicon">✨</span><span class="wtext">May your light never dim — the world needs it desperately</span></div>
+        <div class="wish-chip"><span class="wicon">🌸</span><span class="wtext">May this chapter be your most beautiful one yet</span></div>
+      </div>
+
+      <div class="divider"><div class="dl"></div><div class="dd"></div><div class="dl"></div></div>
+
+      <p class="sig">With every star in the sky & every petal in the wind —<br>your friend, always 🥂</p>
+
+      <button class="music-btn" onclick="toggleMusic(this)">
+        <span class="music-note">♪</span>
+        <span id="musicLabel">play the vibe</span>
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<!-- Hidden audio (lofi/ambient tone via oscillator) -->
+<script>
+// Cursor
+const cur=document.getElementById('cursor'),dot=document.getElementById('cursorDot');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+document.addEventListener('mouseenter',()=>{cur.style.opacity='1';dot.style.opacity='1'});
+setInterval(()=>{cx+=(mx-cx)*.18;cy+=(my-cy)*.18;cur.style.left=cx+'px';cur.style.top=cy+'px'},16);
+document.querySelectorAll('button,.wish-chip').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cur.classList.add('expand'));
+  el.addEventListener('mouseleave',()=>cur.classList.remove('expand'));
+});
+
+// Stars
+const stEl=document.getElementById('stars');
+for(let i=0;i<140;i++){const s=document.createElement('div');s.className='star';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${Math.random()*2.4+.4}px;height:${Math.random()*2.4+.4}px;--dur:${Math.random()*2+1.2}s;animation-delay:${Math.random()*4}s`;stEl.appendChild(s);}
+
+// Shooting stars
+function shootStar(){
+  const s=document.createElement('div');s.className='shoot';
+  s.style.cssText=`left:${Math.random()*60}%;top:${Math.random()*40}%;animation-duration:${.8+Math.random()*.6}s`;
+  document.body.appendChild(s);setTimeout(()=>s.remove(),1500);
+}
+setInterval(shootStar,3500);
+
+// Petals
+const pEl=document.getElementById('petals'),pArr=['🌸','🌺','🌷','✿','❀'];
+for(let i=0;i<22;i++){const p=document.createElement('div');p.className='petal';p.textContent=pArr[i%pArr.length];p.style.cssText=`left:${Math.random()*100}%;animation-duration:${7+Math.random()*7}s;animation-delay:${Math.random()*12}s;font-size:${10+Math.random()*10}px`;pEl.appendChild(p);}
+
+// Candles
+const cdEl=document.getElementById('candles');
+const colors=['#ff8fa3','#ffb3c6','#ff6b8a','#ffc8d4','#e05070','#ffaabb'];
+for(let i=0;i<7;i++){
+  const c=document.createElement('div');c.className='candle';
+  const fd=(1.2+Math.random()*.8).toFixed(2);
+  c.innerHTML=`<div class="flame" style="--fd:${fd}s"></div><div class="wick"></div><div class="candle-body" style="background:${colors[i%colors.length]};height:${22+i*4}px"></div>`;
+  cdEl.appendChild(c);
+}
+
+// Envelope open
+function openEnvelope(){
+  const w=document.getElementById('envWrap');
+  w.classList.add('opening');
+  setTimeout(()=>{
+    w.classList.add('hide');
+    document.getElementById('mainPage').style.opacity='1';
+    setTimeout(()=>{
+      document.getElementById('ageFill').style.width='100%';
+      document.getElementById('ageFill2').style.width='100%';
+    },200);
+    // burst on open
+    for(let i=0;i<20;i++) spawnBurst(window.innerWidth/2,window.innerHeight/2);
+  },700);
+}
+
+// Heart trail on move
+let lastHeart=0;
+document.addEventListener('mousemove',e=>{
+  if(Date.now()-lastHeart<120) return;
+  lastHeart=Date.now();
+  const h=document.createElement('div');
+  h.className='heart-trail';h.textContent='💕';
+  h.style.left=e.clientX+'px';h.style.top=e.clientY+'px';
+  document.body.appendChild(h);setTimeout(()=>h.remove(),700);
+});
+
+// Confetti burst
+function spawnBurst(x,y){
+  const em=['🌸','✨','💕','🌷','⭐','💖','🎉','🌺'];
+  for(let i=0;i<6;i++){
+    const b=document.createElement('div');b.className='burst';
+    b.textContent=em[Math.floor(Math.random()*em.length)];
+    const a=Math.random()*Math.PI*2,d=50+Math.random()*90;
+    b.style.cssText=`left:${x}px;top:${y}px;--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;--tr:${Math.random()*360}deg;animation-delay:${Math.random()*.15}s`;
+    document.body.appendChild(b);setTimeout(()=>b.remove(),1000);
+  }
+}
+document.addEventListener('click',e=>{if(e.target.closest('#envWrap'))return;spawnBurst(e.clientX,e.clientY)});
+
+// Music (ambient tones via Web Audio)
+let audioCtx=null,playing=false,nodes=[];
+function toggleMusic(btn){
+  const lbl=document.getElementById('musicLabel');
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(!playing){
+    const freqs=[261.6,329.6,392,523.2];
+    freqs.forEach((f,i)=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type='sine';osc.frequency.value=f;
+      gain.gain.setValueAtTime(0,audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(.04+i*.01,audioCtx.currentTime+.8);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start();nodes.push({osc,gain});
+    });
+    playing=true;lbl.textContent='pause the vibe';
+  } else {
+    nodes.forEach(({osc,gain})=>{gain.gain.linearRampToValueAtTime(0,audioCtx.currentTime+.5);setTimeout(()=>{try{osc.stop()}catch(e){}},600)});
+    nodes=[];playing=false;lbl.textContent='play the vibe';
+  }
+}
+</script>
+</body>
+</html>
